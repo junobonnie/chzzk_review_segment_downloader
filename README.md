@@ -1,1 +1,1 @@
-# chzzk_review_segment_downloader
+# 치지직 다시보기 구간 다운로더
