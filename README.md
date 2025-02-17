@@ -3,7 +3,7 @@
 ![image](https://github.com/user-attachments/assets/d168dee3-6ca0-407d-b568-955cb2e045d3)
 
 ## 다운로드 링크
-[Download for windows](https://github.com/junobonnie/chzzk_review_segment_downloader/releases/download/v1.0.0/v1.0.0.zip)
+# [Download for windows](https://github.com/junobonnie/chzzk_review_segment_downloader/releases/download/v1.0.0/v1.0.0.zip)
 
 ## 성인 영상 다운로드 방법
 
