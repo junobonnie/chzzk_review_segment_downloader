@@ -22,3 +22,8 @@
  - https://gall.dcinside.com/mgallery/board/view/?id=hejin0_0&no=28710
    
    해당 게시글의 코드를 참고 하였습니다.
+
+## 빌드 방법
+```
+pyinstaller --noconfirm --onefile --windowed --icon "icon.ico" --upx-dir "D:\upx-4.0.2-win64" --add-data "ffmpeg.exe;ffmpeg_bin"  "gui.py"
+```
