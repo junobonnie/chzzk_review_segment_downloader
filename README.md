@@ -4,7 +4,7 @@ https://github.com/user-attachments/assets/dbc24757-eabd-4a9a-a470-d74272f0ea36
 
 
 ## 다운로드 링크
-# [Download for windows](https://github.com/junobonnie/chzzk_review_segment_downloader/releases/download/v1.0.0/v1.0.0.zip)
+# [Download for windows](https://github.com/junobonnie/chzzk_review_segment_downloader/releases/download/v1.1.0/v1.1.0.zip)
 
 <br>
 
