@@ -20,13 +20,20 @@ def get_ffmpeg_path():
         return os.path.join(sys._MEIPASS, "ffmpeg_bin", "ffmpeg.exe")
     return "ffmpeg"  # 개발 중에는 시스템 FFmpeg 사용
 
+def progress_print(progress):
+    print(f"\rDownloading... {progress:.2f}%")
+
+def speed_print(speed):
+    print(f"Speed: {speed} kB/s")
+
 class ChzzkStreamExtractor:
     VOD_URL = "https://apis.naver.com/neonplayer/vodplay/v2/playback/{video_id}?key={in_key}"
     VOD_INFO = "https://api.chzzk.naver.com/service/v2/videos/{video_no}"
     
-    def __init__(self, message = print, progress_update = (lambda x: None)):
+    def __init__(self, message = print, progress_update = progress_print, speed_update = speed_print):
         self.message = message
         self.progress_update = progress_update
+        self.speed_update = speed_update
         self.NID_AUT = ""
         self.NID_SES = ""
         self.download_path = "./"
@@ -41,6 +48,14 @@ class ChzzkStreamExtractor:
 
         video_no = match.group("video_no")
         return self._get_vod_streams(video_no, start_time, end_time, start_time_str, end_time_str)
+    
+    @staticmethod
+    def _get_download_speed(log):
+        """FFmpeg 로그에서 다운로드 속도를 추출 (speed=1.2x 같은 값 활용)"""
+        match = re.findall(r"speed=([\d\.]+)x", log)
+        if match:
+            return float(match[-1]) * 1024  # KB/s로 변환
+        return None
 
     def download_video(self, video_url, output_path, start_time, end_time):
         total_duration = end_time - start_time
@@ -81,8 +96,11 @@ class ChzzkStreamExtractor:
                         current_time = total_duration
                     progress = (current_time / total_duration) * 100
                     self.progress_update(progress)
-                    self.message(f"\rDownloading... {progress:.2f}% ")
                     # sys.stdout.flush()  # 추가
+                
+            speed = self._get_download_speed(decoded_line)
+            if speed:
+                self.speed_update(speed)
     
         process.wait()
         self.message("\nDownload completed!\n")
@@ -232,7 +250,7 @@ if __name__ == "__main__":
     CSE.NID_AUT, CSE.NID_SES = "", ""
     link = "https://chzzk.naver.com/video/5845060"
     start_time_str = "01:00:05"
-    end_time_str = "01:00:55"
+    end_time_str = "01:05:55"
     start_time = convert_time_to_seconds(start_time_str)
     end_time = convert_time_to_seconds(end_time_str)
     if link and start_time is not None and end_time is not None:
