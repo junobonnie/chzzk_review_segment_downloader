@@ -1,5 +1,7 @@
 # 치지직 다시보기 구간 다운로더
-![image](https://github.com/user-attachments/assets/d168dee3-6ca0-407d-b568-955cb2e045d3)
+
+https://github.com/user-attachments/assets/dbc24757-eabd-4a9a-a470-d74272f0ea36
+
 
 ## 다운로드 링크
 # [Download for windows](https://github.com/junobonnie/chzzk_review_segment_downloader/releases/download/v1.0.0/v1.0.0.zip)
