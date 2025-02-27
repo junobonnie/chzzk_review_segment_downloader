@@ -10,10 +10,15 @@ from tkinter import filedialog
 import os
 import threading
 import webbrowser
+import winsound
+
+RED = "#a31f5f"
+GREEN = "#1fa372"
 
 def on_button_click():
     def task():
         button.configure(state="disabled")
+        status_label.configure(text_color=RED)
         url = entry.get()
         CSE.NID_AUT, CSE.NID_SES = get_NID()
         
@@ -28,6 +33,10 @@ def on_button_click():
         else:
             add_log("Please provide valid inputs")
         button.configure(state="normal")
+        status_label.configure(text_color=GREEN)
+        download_complete_popup()
+        progress_update(0)
+        speed_update(0)
 
     thread = threading.Thread(target=task)
     thread.start()
@@ -134,6 +143,18 @@ def open_popup():
     button0 = ctk.CTkButton(popup, text="저장하기", command=save_NID)
     button0.pack(padx=10, pady=10)
     
+def download_complete_popup():
+    popup_width, popup_height = 100, 50
+    popup_x, popup_y = get_popup_pos(popup_width, popup_height)
+    
+    new_popup = ctk.CTkToplevel(root)
+    new_popup.geometry(f"{popup_width}x{popup_height}+{popup_x}+{popup_y}")
+    new_popup.title("")
+    new_popup.grab_set()
+    label = ctk.CTkLabel(new_popup, text="다운로드 완료")
+    label.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
+    winsound.MessageBeep()
+    
 # 새로운 텍스트 추가 함수
 def add_log(text):
     scrollable_log.configure(state="normal")  # 편집 가능하게 설정
@@ -143,8 +164,16 @@ def add_log(text):
 
 def progress_update(value):
     progress_bar.set(value/100)
-
-CSE = crsd.ChzzkStreamExtractor(add_log, progress_update)
+    download_percent_label.configure(text="%.2f%%"%(value))
+    
+def speed_update(value):
+    if value < 1000:
+        download_speed_label.configure(text_color=RED)
+    else:
+        download_speed_label.configure(text_color=GREEN)
+    download_speed_label.configure(text="%.2f kB/s"%(value))
+    
+CSE = crsd.ChzzkStreamExtractor(add_log, progress_update, speed_update)
 
 # UI 초기화
 ctk.set_appearance_mode("dark")
@@ -152,7 +181,7 @@ ctk.set_default_color_theme("blue")
 
 root = ctk.CTk()
 root.title("치지직 다시보기 구간 다운로더")
-root.geometry("500x200")
+root.geometry("500x230")
 root.iconbitmap("icon.ico")
 
 # 좌측 메뉴바 생성
@@ -163,7 +192,7 @@ info_button = ctk.CTkButton(menu_bar, text="프로그램 정보", width=100, com
 info_button.pack(pady=10, padx=10, fill="x")
 
 NID_button = ctk.CTkButton(menu_bar, text="NID 수정", width=100, command=open_popup)
-NID_button.pack(pady=10, padx=10, fill="x")
+NID_button.pack(pady=0, padx=10, fill="x")
 
 # 스크롤 가능한 로그
 scrollable_log = ctk.CTkTextbox(menu_bar, width=100, wrap="word")
@@ -173,10 +202,10 @@ scrollable_log.pack(pady=10)
 
 # URL 입력 필드
 entry = ctk.CTkEntry(root, placeholder_text="다시보기 방송주소를 입력하세요")
-entry.pack(pady=10, padx=20, fill='x')
+entry.pack(pady=10, padx=25, fill='x')
 
 # 시간 입력 필드
-time_frame = ctk.CTkFrame(root)
+time_frame = ctk.CTkFrame(root, fg_color="transparent")
 time_frame.pack(pady=10, padx=20, fill='x')
 
 start_entry = ctk.CTkEntry(time_frame, placeholder_text="00:00:00", width=50)
@@ -190,7 +219,7 @@ end_entry = ctk.CTkEntry(time_frame, placeholder_text="00:00:00", width=50)
 end_entry.pack(side="right", fill='x', expand=True, padx=5)
 
 # 다운로드 경로 입력 필드 및 버튼
-path_frame = ctk.CTkFrame(root)
+path_frame = ctk.CTkFrame(root, fg_color="transparent")
 path_frame.pack(pady=10, padx=20, fill='x')
 
 path_entry = ctk.CTkEntry(path_frame, placeholder_text="다운로드 경로를 선택하세요", width=200)
@@ -205,7 +234,7 @@ open_button = ctk.CTkButton(path_frame, text="열기", command=open_download_pat
 open_button.pack(side="right", padx=5)
 
 # 다운로드 버튼
-download_frame = ctk.CTkFrame(root)
+download_frame = ctk.CTkFrame(root, fg_color="transparent")
 download_frame.pack(pady=10, padx=20, fill='x')
 
 # 진행 상태 바
@@ -214,9 +243,22 @@ progress_bar.pack(side="left", fill='x', expand=True, padx=5)
 progress_bar.set(0)
 
 
+status_label = ctk.CTkLabel(download_frame, text="●", text_color="#1fa372")
+status_label.pack(side="left", padx=5)
+
 # 확인 버튼 및 진행 상태 바 배치
 button = ctk.CTkButton(download_frame, text="다운로드", command=on_button_click, width=90)
 button.pack(side="right", padx=5)
+
+# 다운로드 상태 표시
+download_status_frame = ctk.CTkFrame(root, fg_color="transparent")
+download_status_frame.pack(pady=0, padx=20, fill='x')
+
+download_percent_label = ctk.CTkLabel(download_status_frame, text="0.0%", text_color=GREEN, width=100)
+download_percent_label.pack(side="left", padx=5)
+
+download_speed_label = ctk.CTkLabel(download_status_frame, text="0.0 kB/s", text_color=RED, width=100)
+download_speed_label.pack(side="left", padx=5)
 
 # 실행
 root.mainloop()
